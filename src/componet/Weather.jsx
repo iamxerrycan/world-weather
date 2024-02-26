@@ -7,7 +7,7 @@ import Storm_png from "../assetes/icons/storm.png";
 import Snow_png from "../assetes/icons/snow.png";
 import Haze_png from "../assetes/icons/haze.png";
 import wind_png from "../assetes/icons/winds.png";
-import Humidity from '../assetes/icons/humi.png'
+import Humidity from '../assetes/icons/humidity.png'
 import getWeatherIcon from "./Getweather";
 
 const Weather = () => {
@@ -83,9 +83,9 @@ const Weather = () => {
             <img src={Humidity} className="icon" />
             <div className="data">
               {weatherData && (
-                <div className="humidity-perc">{weatherData.main.humidity}</div>
+                <div className="humidity-perc">{weatherData.main.humidity} % </div>
               )}
-              {weatherData && <div className="text">Humidity</div>}
+              <div className="text">Humidity</div>
             </div>
           </div>
           <div className="element">

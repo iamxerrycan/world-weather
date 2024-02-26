@@ -1,6 +1,6 @@
 .container-main {
   width: 300px;
-  height: 400px;
+  height: 500px;
   margin: auto;
   font-family: 'Courier New', Courier, monospace;
   color: rgb(255, 255, 255);
@@ -60,9 +60,18 @@
     height: 100px;
 }
 
+.icon{
+    border-radius: 50%;
+}
+
 .element img{
-    width: 40px;
-    height: 40px;
+    width: 100px;
+    height: 100px;
+    background-image: linear-gradient(
+        180deg,
+        rgb(19, 224, 122) 0%,
+        rgb(2, 124, 63) 100%
+      );
 }
 
 .element{
@@ -93,7 +102,7 @@
 @media screen and (max-width: 400px) {
     .container-main {
       width: 95%;
-      height: 85%;
+  
     }
   
     .top-searchbar {
@@ -113,6 +122,11 @@
         height: 30px;
     }
 
+    .weather-conatiner{}
+    .dataweather{
+        height: 150px;
+        margin-top: 20px;
+    }
     /* .dataweather{
         display: flex;
         justify-content: space-evenly;

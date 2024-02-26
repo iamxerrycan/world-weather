@@ -7,16 +7,25 @@ import Storm_png from "../assetes/icons/storm.png";
 import Snow_png from "../assetes/icons/snow.png";
 import Haze_png from "../assetes/icons/haze.png";
 import wind_png from "../assetes/icons/winds.png";
-import Humidity from "../assetes/icons/humi.png";
+import Humidity from '../assetes/icons/humi.png'
 import getWeatherIcon from "./Getweather";
-import fetchWeather from "./FetchWeather";
 
 const Weather = () => {
-  const apikey = "4cdd5dee4b21790322c9993b89fb25d1";
-  const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apikey}`;
   const [weatherData, setWeatherData] = useState(null);
   const [city, setCity] = useState("kolkata");
   const [error, setError] = useState(null);
+
+  const apikey = "4cdd5dee4b21790322c9993b89fb25d1";
+
+  const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apikey}`;
+
+  const fetchWeather = () => {
+    fetch(url)
+      .then((response) => response.json())
+      .then((data) => setWeatherData(data))
+      .catch((error) => setError("Error fetching weather data"));
+    console.log(city);
+  };
 
   const handlechange = (e) => {
     setCity(e.target.value);
@@ -31,14 +40,6 @@ const Weather = () => {
       setCity("");
     }
   };
-
-const fetchWeather = () => {
-  fetch(url)
-    .then((response) => response.json())
-    .then((data) => setWeatherData(data))
-    .catch((error) => setError("Error fetching weather data"));
-  console.log(city);
-}
 
   useEffect(() => {
     fetchWeather();
@@ -69,9 +70,7 @@ const fetchWeather = () => {
         )}
 
         {weatherData && (
-          <div className="weathertemp">
-            {Math.round(weatherData.main.temp)}°C
-          </div>
+          <div className="weathertemp">{Math.round(weatherData.main.temp)}°C</div>
         )}
         <div className="weatherlocation">
           {weatherData && <p>Place-{weatherData.name}</p>}

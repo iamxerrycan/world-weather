@@ -35,6 +35,9 @@ const Weather = () => {
     e.preventDefault();
     if (!city) {
       setError("😡");
+      setTimeout(() => {
+        setError(null);
+      }, 2000);
     } else {
       fetchWeather();
       setCity("");
@@ -55,8 +58,8 @@ const Weather = () => {
           onChange={handlechange}
         />
 
-        <button onClick={handlesearch}>Search</button>
-        {error && <span style={{ backgroundColor: "" }}>{error}</span>}
+        <button onClick={handlesearch}>{error ? <span>{error}</span> : "Search"}</button>
+        {/* {error && <span style={{ backgroundColor: "" }}>{error}</span>} */}
       </div>
 
       <div className="weather-conatiner">

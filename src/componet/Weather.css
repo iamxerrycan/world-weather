@@ -4,6 +4,7 @@
   margin: auto;
   font-family: 'Courier New', Courier, monospace;
   color: rgb(255, 255, 255);
+  font-size: small;
   margin-top: 20px;
   border-radius: 10px;
   background-image: linear-gradient(
@@ -92,7 +93,7 @@
 @media screen and (max-width: 400px) {
     .container-main {
       width: 95%;
-      height: 95%;
+      height: 85%;
     }
   
     .top-searchbar {
@@ -112,13 +113,15 @@
         height: 30px;
     }
 
-    .dataweather{
+    /* .dataweather{
         display: flex;
-        justify-content: space-between;
+        justify-content: space-evenly;
     }
-  
+   */
     .element {
       flex-direction: column;
+      justify-content: flex-start;
+      height: 50%;
       margin-bottom: 20px
     }
   }

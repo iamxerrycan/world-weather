@@ -4,16 +4,28 @@ import Clear_png from "../assetes/icons/clear.png";
 import Cloud_png from "../assetes/icons/cloud.png";
 import Rain_png from "../assetes/icons/rain.png";
 import Storm_png from "../assetes/icons/storm.png";
-import Swon_png from "../assetes/icons/snow.png";
+import Snow_png from "../assetes/icons/snow.png";
 import Haze_png from "../assetes/icons/haze.png";
-import wind_png from "../assetes/icons/winf.png";
+import wind_png from "../assetes/icons/winds.png";
+import Humidity from '../assetes/icons/humi.png'
+import getWeatherIcon from "./Getweather";
 
 const Weather = () => {
   const [weatherData, setWeatherData] = useState(null);
-  const [city, setCity] = useState("");
+  const [city, setCity] = useState("kolkata");
   const [error, setError] = useState(null);
 
-  console.log(city);
+  const apikey = "4cdd5dee4b21790322c9993b89fb25d1";
+
+  const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apikey}`;
+
+  const fetchWeather = () => {
+    fetch(url)
+      .then((response) => response.json())
+      .then((data) => setWeatherData(data))
+      .catch((error) => setError("Error fetching weather data"));
+    console.log(city);
+  };
 
   const handlechange = (e) => {
     setCity(e.target.value);
@@ -21,7 +33,17 @@ const Weather = () => {
 
   const handlesearch = (e) => {
     e.preventDefault();
+    if (!city) {
+      setError("😡");
+    } else {
+      fetchWeather();
+      setCity("");
+    }
   };
+
+  useEffect(() => {
+    fetchWeather();
+  }, []);
 
   return (
     <div className="container-main">
@@ -32,29 +54,47 @@ const Weather = () => {
           value={city}
           onChange={handlechange}
         />
+
         <button onClick={handlesearch}>Search</button>
+        {error && <span style={{ backgroundColor: "" }}>{error}</span>}
       </div>
+
       <div className="weather-conatiner">
-        <div className="weatherimg">
-          <img src={Clear_png} />
-        </div>
-        <div className="weathertemp"> 24^</div>
+        {weatherData && (
+          <div className="weatherimg">
+            <img
+              src={getWeatherIcon(weatherData.weather[0].main)}
+              alt="Weather Icon"
+            />
+          </div>
+        )}
+
+        {weatherData && (
+          <div className="weathertemp">{Math.round(weatherData.main.temp)}°C</div>
+        )}
         <div className="weatherlocation">
-          <p> Laketown </p>
+          {weatherData && <p>Place-{weatherData.name}</p>}
         </div>
         <div className="dataweather">
           <div className="element">
-            <img src={Haze_png} className="icon" />
+            <img src={Humidity} className="icon" />
             <div className="data">
-              <div className="humidity-perc">0%</div>
-              <div className="text">Humidity</div>
+              {weatherData && (
+                <div className="humidity-perc">{weatherData.main.humidity}</div>
+              )}
+              {weatherData && <div className="text">Humidity</div>}
             </div>
           </div>
           <div className="element">
             <img src={wind_png} className="icon" />
             <div className="data">
-              <div className="humidity-perc">8km/h</div>
-              <div className="text">wind speed</div>
+              {weatherData && (
+                <div className="humidity-perc">
+                  {weatherData.wind.speed} km/h
+                </div>
+              )}
+
+              <div className="text">speed</div>
             </div>
           </div>{" "}
         </div>

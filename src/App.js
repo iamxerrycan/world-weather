@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 //import logo from './logo.svg';
 import './App.css';
-import Hello from './Hello';
+import Weather from './componet/Weather';
 
 class App extends Component {
   render() {
     return (
-    <Hello/>
+    <Weather/>
     );
   }
 }

@@ -1,6 +1,6 @@
 .container-main {
   width: 300px;
-  height: 500px;
+  height: 550px;
   margin: auto;
   font-family: 'Courier New', Courier, monospace;
   color: rgb(255, 255, 255);
@@ -10,8 +10,8 @@
   border-radius: 10px;
   background-image: linear-gradient(
     180deg,
-    rgb(19, 224, 122) 0%,
-    rgb(2, 124, 63) 100%
+    rgb(180, 45, 4) 0%,
+    rgb(60, 83, 135) 100%
   );
 }
 
@@ -104,7 +104,6 @@
 @media screen and (max-width: 400px) {
     .container-main {
       width: 95%;
-  
     }
   
     .top-searchbar {

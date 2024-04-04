@@ -7,24 +7,37 @@ import Storm_png from "../assetes/icons/storm.png";
 import Snow_png from "../assetes/icons/snow.png";
 import Haze_png from "../assetes/icons/haze.png";
 import wind_png from "../assetes/icons/winds.png";
-import Humidity from '../assetes/icons/humidity.png'
+import Humidity from "../assetes/icons/humidity.png";
 import getWeatherIcon from "./Getweather";
 
 const Weather = () => {
   const [weatherData, setWeatherData] = useState(null);
   const [city, setCity] = useState("kolkata");
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const apikey = "4cdd5dee4b21790322c9993b89fb25d1";
 
   const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apikey}`;
 
   const fetchWeather = () => {
+    setLoading(true);
     fetch(url)
-      .then((response) => response.json())
-      .then((data) => setWeatherData(data))
-      .catch((error) => setError("Error fetching weather data"));
-    console.log(city);
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Not Found");
+        }
+        return response.json();
+      })
+
+      .then((data) => setWeatherData(data), setError(null))
+      .catch((error) => setError("Not Found") ,setTimeout(() => {
+        setError(null)
+      }, 2000))
+
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   const handlechange = (e) => {
@@ -58,7 +71,9 @@ const Weather = () => {
           onChange={handlechange}
         />
 
-        <button onClick={handlesearch}>{error ? <span>{error}</span> : "Search"}</button>
+        <button onClick={handlesearch}>
+          {error ? <span>{error}</span> : "Search"}
+        </button>
         {/* {error && <span style={{ backgroundColor: "" }}>{error}</span>} */}
       </div>
 
@@ -73,7 +88,9 @@ const Weather = () => {
         )}
 
         {weatherData && (
-          <div className="weathertemp">{Math.round(weatherData.main.temp)}°C</div>
+          <div className="weathertemp">
+            {Math.round(weatherData.main.temp)}°C
+          </div>
         )}
         <div className="weatherlocation">
           {weatherData && <p>Place-{weatherData.name}</p>}
@@ -83,7 +100,9 @@ const Weather = () => {
             <img src={Humidity} className="icon" />
             <div className="data">
               {weatherData && (
-                <div className="humidity-perc">{weatherData.main.humidity} % </div>
+                <div className="humidity-perc">
+                  {weatherData.main.humidity} %{" "}
+                </div>
               )}
               <div className="text">Humidity</div>
             </div>

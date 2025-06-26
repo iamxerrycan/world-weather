@@ -1,13 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./Weather.css";
-import Clear_png from "../assetes/icons/clear.png";
-import Cloud_png from "../assetes/icons/cloud.png";
-import Rain_png from "../assetes/icons/rain.png";
-import Storm_png from "../assetes/icons/storm.png";
-import Snow_png from "../assetes/icons/snow.png";
-import Haze_png from "../assetes/icons/haze.png";
-import wind_png from "../assetes/icons/winds.png";
-import Humidity from "../assetes/icons/humidity.png";
+import windIcon from "../assetes/icons/winds.png";
+import humidityIcon from "../assetes/icons/humidity.png";
 import getWeatherIcon from "./Getweather";
 
 const Weather = () => {
@@ -16,113 +10,161 @@ const Weather = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
- const fetchWeather = () => {
-  setLoading(true);
-  const url = `https://rest-api-backend-lad4.onrender.com/weather?city=${city}`;
-  fetch(url)
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error("Not Found");
-      }
-      return response.json();
-    })
-    .then((data) => {
-      setWeatherData(data);
-      setError(null);
-    })
-    .catch((error) => {
-      setError("Not Found");
-      setTimeout(() => {
+  const fetchWeather = () => {
+    setLoading(true);
+    const url = `https://rest-api-backend-lad4.onrender.com/weather?q=${city}`;
+    fetch(url)
+      .then((res) => {
+        if (!res.ok) throw new Error("City Not Found");
+        return res.json();
+      })
+      .then((data) => {
+        setWeatherData(data);
         setError(null);
-      }, 2000);
-    })
-    .finally(() => {
-      setLoading(false);
-    });
-};
-
-
-  const handlechange = (e) => {
-    setCity(e.target.value);
+        setCity("");
+      })
+      .catch(() => {
+        setError("City Not Found 😡");
+        setTimeout(() => setError(null), 2500);
+      })
+      .finally(() => setLoading(false));
   };
 
-  const handlesearch = (e) => {
+  const handleChange = (e) => setCity(e.target.value);
+
+  const handleSearch = (e) => {
     e.preventDefault();
-    if (!city) {
-      setError("😡");
-      setTimeout(() => {
-        setError(null);
-      }, 2000);
-    } else {
-      fetchWeather();
-      setCity("");
+    if (!city.trim()) {
+      setError("Please enter a city");
+      setTimeout(() => setError(null), 2000);
+      return;
     }
+    fetchWeather();
   };
 
   useEffect(() => {
     fetchWeather();
   }, []);
 
+  const getWindDirection = (deg) => {
+    const directions = [
+      "N", "NE", "E", "SE", "S", "SW", "W", "NW", "N"
+    ];
+    return directions[Math.round(deg / 45) % 8];
+  };
+
+  const formatTime = (timestamp) => {
+    return new Date(timestamp * 1000).toLocaleTimeString();
+  };
+
   return (
-    <div className="container-main">
-      <div className="top-searchbar">
+    <div className="weather-container">
+      <form className="search-bar" onSubmit={handleSearch}>
         <input
           type="text"
-          placeholder="enter city"
+          placeholder="Enter city..."
           value={city}
-          onChange={handlechange}
+          onChange={handleChange}
+          className="search-input"
         />
-
-        <button onClick={handlesearch}>
-          {error ? <span>{error}</span> : "Search"}
+        <button type="submit" className="search-button">
+          Search
         </button>
-        {/* {error && <span style={{ backgroundColor: "" }}>{error}</span>} */}
-      </div>
+      </form>
 
-      <div className="weather-conatiner">
-        {weatherData && (
-          <div className="weatherimg">
+      {error && <div className="error-message">{error}</div>}
+      {loading && <div className="loading">Loading...</div>}
+
+      {weatherData && !loading && (
+        <div className="weather-card">
+          <div className="weather-main">
             <img
               src={getWeatherIcon(weatherData.weather[0].main)}
               alt="Weather Icon"
+              className="weather-icon"
             />
+            <h2 className="temperature">
+              {Math.round(weatherData.main.temp)}°C
+            </h2>
+            <p className="location">
+              📍 {weatherData.name}, {weatherData.sys.country}
+            </p>
+            <p className="description">
+              {weatherData.weather[0].main} - {weatherData.weather[0].description}
+            </p>
           </div>
-        )}
 
-        {weatherData && (
-          <div className="weathertemp">
-            {Math.round(weatherData.main.temp)}°C
-          </div>
-        )}
-        <div className="weatherlocation">
-          {weatherData && <p>Place-{weatherData.name}</p>}
-        </div>
-        <div className="dataweather">
-          <div className="element">
-            <img src={Humidity} className="icon" />
-            <div className="data">
-              {weatherData && (
-                <div className="humidity-perc">
-                  {weatherData.main.humidity} %{" "}
-                </div>
-              )}
-              <div className="text">Humidity</div>
+          <div className="weather-info">
+            <div className="info-item">
+              <img src={humidityIcon} alt="Humidity" className="info-icon" />
+              <div>
+                <p className="info-value">{weatherData.main.humidity}%</p>
+                <p className="info-label">Humidity</p>
+              </div>
+            </div>
+
+            <div className="info-item">
+              <img src={windIcon} alt="Wind" className="info-icon" />
+              <div>
+                <p className="info-value">
+                  {weatherData.wind.speed} km/h ({getWindDirection(weatherData.wind.deg)})
+                </p>
+                <p className="info-label">Wind</p>
+              </div>
+            </div>
+
+            <div className="info-item">
+              <div>
+                <p className="info-value">
+                  {weatherData.visibility / 1000} km
+                </p>
+                <p className="info-label">Visibility</p>
+              </div>
+            </div>
+
+            <div className="info-item">
+              <div>
+                <p className="info-value">
+                  {weatherData.main.pressure} hPa
+                </p>
+                <p className="info-label">Pressure</p>
+              </div>
+            </div>
+
+            <div className="info-item">
+              <div>
+                <p className="info-value">
+                  {Math.round(weatherData.main.feels_like)}°C
+                </p>
+                <p className="info-label">Feels Like</p>
+              </div>
+            </div>
+
+            <div className="info-item">
+              <div>
+                <p className="info-value">
+                  {Math.round(weatherData.main.temp_min)}° / {Math.round(weatherData.main.temp_max)}°
+                </p>
+                <p className="info-label">Min / Max</p>
+              </div>
+            </div>
+
+            <div className="info-item">
+              <div>
+                <p className="info-value">{formatTime(weatherData.sys.sunrise)}</p>
+                <p className="info-label">Sunrise</p>
+              </div>
+            </div>
+
+            <div className="info-item">
+              <div>
+                <p className="info-value">{formatTime(weatherData.sys.sunset)}</p>
+                <p className="info-label">Sunset</p>
+              </div>
             </div>
           </div>
-          <div className="element">
-            <img src={wind_png} className="icon" />
-            <div className="data">
-              {weatherData && (
-                <div className="humidity-perc">
-                  {weatherData.wind.speed} km/h
-                </div>
-              )}
-
-              <div className="text">speed</div>
-            </div>
-          </div>{" "}
         </div>
-      </div>
+      )}
     </div>
   );
 };

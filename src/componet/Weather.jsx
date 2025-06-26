@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from "react";
-import "./Weather.css";
-import windIcon from "../assetes/icons/winds.png";
-import humidityIcon from "../assetes/icons/humidity.png";
-import getWeatherIcon from "./Getweather";
+import React, { useState, useEffect } from 'react';
+import './Weather.css';
+// import windIcon from "../assetes/icons/winds.png";
+// import humidityIcon from "../assetes/icons/humidity.png";
+import getWeatherIcon from './Getweather';
 
 const Weather = () => {
   const [weatherData, setWeatherData] = useState(null);
-  const [city, setCity] = useState("kolkata");
+  const [city, setCity] = useState('kolkata');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -15,16 +15,16 @@ const Weather = () => {
     const url = `https://rest-api-backend-lad4.onrender.com/weather?q=${city}`;
     fetch(url)
       .then((res) => {
-        if (!res.ok) throw new Error("City Not Found");
+        if (!res.ok) throw new Error('City Not Found');
         return res.json();
       })
       .then((data) => {
         setWeatherData(data);
         setError(null);
-        setCity("");
+        setCity('');
       })
       .catch(() => {
-        setError("City Not Found 😡");
+        setError('City Not Found 😡');
         setTimeout(() => setError(null), 2500);
       })
       .finally(() => setLoading(false));
@@ -35,7 +35,7 @@ const Weather = () => {
   const handleSearch = (e) => {
     e.preventDefault();
     if (!city.trim()) {
-      setError("Please enter a city");
+      setError('Please enter a city');
       setTimeout(() => setError(null), 2000);
       return;
     }
@@ -47,9 +47,7 @@ const Weather = () => {
   }, []);
 
   const getWindDirection = (deg) => {
-    const directions = [
-      "N", "NE", "E", "SE", "S", "SW", "W", "NW", "N"
-    ];
+    const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW', 'N'];
     return directions[Math.round(deg / 45) % 8];
   };
 
@@ -73,7 +71,11 @@ const Weather = () => {
       </form>
 
       {error && <div className="error-message">{error}</div>}
-      {loading && <div className="loading">Loading...</div>}
+      {loading && (
+        <div className="loading">
+          <div className="spinner"></div>
+        </div>
+      )}
 
       {weatherData && !loading && (
         <div className="weather-card">
@@ -90,13 +92,13 @@ const Weather = () => {
               📍 {weatherData.name}, {weatherData.sys.country}
             </p>
             <p className="description">
-              {weatherData.weather[0].main} - {weatherData.weather[0].description}
+              {weatherData.weather[0].main} -{' '}
+              {weatherData.weather[0].description}
             </p>
           </div>
 
           <div className="weather-info">
             <div className="info-item">
-              <img src={humidityIcon} alt="Humidity" className="info-icon" />
               <div>
                 <p className="info-value">{weatherData.main.humidity}%</p>
                 <p className="info-label">Humidity</p>
@@ -104,10 +106,10 @@ const Weather = () => {
             </div>
 
             <div className="info-item">
-              <img src={windIcon} alt="Wind" className="info-icon" />
               <div>
                 <p className="info-value">
-                  {weatherData.wind.speed} km/h ({getWindDirection(weatherData.wind.deg)})
+                  {weatherData.wind.speed} km/h (
+                  {getWindDirection(weatherData.wind.deg)})
                 </p>
                 <p className="info-label">Wind</p>
               </div>
@@ -115,18 +117,14 @@ const Weather = () => {
 
             <div className="info-item">
               <div>
-                <p className="info-value">
-                  {weatherData.visibility / 1000} km
-                </p>
+                <p className="info-value">{weatherData.visibility / 1000} km</p>
                 <p className="info-label">Visibility</p>
               </div>
             </div>
 
             <div className="info-item">
               <div>
-                <p className="info-value">
-                  {weatherData.main.pressure} hPa
-                </p>
+                <p className="info-value">{weatherData.main.pressure} hPa</p>
                 <p className="info-label">Pressure</p>
               </div>
             </div>
@@ -143,7 +141,8 @@ const Weather = () => {
             <div className="info-item">
               <div>
                 <p className="info-value">
-                  {Math.round(weatherData.main.temp_min)}° / {Math.round(weatherData.main.temp_max)}°
+                  {Math.round(weatherData.main.temp_min)}° /{' '}
+                  {Math.round(weatherData.main.temp_max)}°
                 </p>
                 <p className="info-label">Min / Max</p>
               </div>
@@ -151,14 +150,18 @@ const Weather = () => {
 
             <div className="info-item">
               <div>
-                <p className="info-value">{formatTime(weatherData.sys.sunrise)}</p>
+                <p className="info-value">
+                  {formatTime(weatherData.sys.sunrise)}
+                </p>
                 <p className="info-label">Sunrise</p>
               </div>
             </div>
 
             <div className="info-item">
               <div>
-                <p className="info-value">{formatTime(weatherData.sys.sunset)}</p>
+                <p className="info-value">
+                  {formatTime(weatherData.sys.sunset)}
+                </p>
                 <p className="info-label">Sunset</p>
               </div>
             </div>

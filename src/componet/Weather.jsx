@@ -16,29 +16,31 @@ const Weather = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const apikey = "4cdd5dee4b21790322c9993b89fb25d1";
+ const fetchWeather = () => {
+  setLoading(true);
+  const url = `https://rest-api-backend-lad4.onrender.com/weather?city=${city}`;
+  fetch(url)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Not Found");
+      }
+      return response.json();
+    })
+    .then((data) => {
+      setWeatherData(data);
+      setError(null);
+    })
+    .catch((error) => {
+      setError("Not Found");
+      setTimeout(() => {
+        setError(null);
+      }, 2000);
+    })
+    .finally(() => {
+      setLoading(false);
+    });
+};
 
-  const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apikey}`;
-
-  const fetchWeather = () => {
-    setLoading(true);
-    fetch(url)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Not Found");
-        }
-        return response.json();
-      })
-
-      .then((data) => setWeatherData(data), setError(null))
-      .catch((error) => setError("Not Found") ,setTimeout(() => {
-        setError(null)
-      }, 2000))
-
-      .finally(() => {
-        setLoading(false);
-      });
-  };
 
   const handlechange = (e) => {
     setCity(e.target.value);

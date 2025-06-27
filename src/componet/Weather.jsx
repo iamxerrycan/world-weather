@@ -1,19 +1,18 @@
+// Weather.jsx
 import React, { useState, useEffect } from 'react';
 import './Weather.css';
-// import windIcon from "../assetes/icons/winds.png";
-// import humidityIcon from "../assetes/icons/humidity.png";
 import getWeatherIcon from './Getweather';
 
 const Weather = () => {
   const [weatherData, setWeatherData] = useState(null);
-  const [city, setCity] = useState('kolkata');
+  const [city, setCity] = useState('Kolkata');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const fetchWeather = () => {
     setLoading(true);
-    const url = `https://rest-api-backend-lad4.onrender.com/weather?q=${city}`;
-    fetch(url)
+    fetch(`https://rest-api-backend-lad4.onrender.com/weather?q=${city}`)
       .then((res) => {
         if (!res.ok) throw new Error('City Not Found');
         return res.json();
@@ -22,6 +21,7 @@ const Weather = () => {
         setWeatherData(data);
         setError(null);
         setCity('');
+        setIsModalOpen(false);
       })
       .catch(() => {
         setError('City Not Found 😡');
@@ -29,6 +29,10 @@ const Weather = () => {
       })
       .finally(() => setLoading(false));
   };
+
+  useEffect(() => {
+    fetchWeather();
+  }, []);
 
   const handleChange = (e) => setCity(e.target.value);
 
@@ -42,134 +46,122 @@ const Weather = () => {
     fetchWeather();
   };
 
-  useEffect(() => {
-    fetchWeather();
-  }, []);
-
   const getWindDirection = (deg) => {
-    const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW', 'N'];
+    const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
     return directions[Math.round(deg / 45) % 8];
   };
 
-  const formatTime = (timestamp) => {
-    return new Date(timestamp * 1000).toLocaleTimeString();
+  const formatTime = (timestamp) =>
+    new Date(timestamp * 1000).toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good Morning';
+    if (hour < 17) return 'Good Afternoon';
+    return 'Good Evening';
   };
 
   return (
-    <div className="weather-container">
-      <form className="search-bar" onSubmit={handleSearch}>
-        <input
-          type="text"
-          placeholder="Enter city..."
-          value={city}
-          onChange={handleChange}
-          className="search-input"
-        />
-        <button type="submit" className="search-button">
-          Search
-        </button>
-      </form>
-
-      {error && <div className="error-message">{error}</div>}
-      {loading && (
-        <div className="loading">
-          <div className="spinner"></div>
-        </div>
-      )}
-
+    <div className="weather-app">
       {weatherData && !loading && (
-        <div className="weather-card">
-          <div className="weather-main">
-            <img
-              src={getWeatherIcon(weatherData.weather[0].main)}
-              alt="Weather Icon"
-              className="weather-icon"
-            />
-            <h2 className="temperature">
-              {Math.round(weatherData.main.temp)}°C
-            </h2>
-            <p className="location">
-              📍 {weatherData.name}, {weatherData.sys.country}
-            </p>
-            <p className="description">
-              {weatherData.weather[0].main} -{' '}
-              {weatherData.weather[0].description}
-            </p>
-          </div>
-
-          <div className="weather-info">
-            <div className="info-item">
-              <div>
-                <p className="info-value">{weatherData.main.humidity}%</p>
-                <p className="info-label">Humidity</p>
+        <div className="weather-container">
+          <div className="right-section">
+            <div className="greeting-bar">
+              <div className="greet-location">
+                📍 {weatherData.name}, {weatherData.sys.country}
+              </div>
+              <div className="greet-message">{getGreeting()}</div>
+              <div className="greet-time">
+                <button
+                  className="search-trigger"
+                  onClick={() => setIsModalOpen(true)}
+                >
+                  Search
+                </button>
               </div>
             </div>
 
-            <div className="info-item">
-              <div>
-                <p className="info-value">
-                  {weatherData.wind.speed} km/h (
-                  {getWindDirection(weatherData.wind.deg)})
-                </p>
-                <p className="info-label">Wind</p>
-              </div>
+            <div className="detailed-info">
+              <h2>{Math.round(weatherData.main.temp)}°</h2>
+              <span>💨 {weatherData.wind.speed} m/s</span>
+              <span>💧 {weatherData.main.humidity}%</span>
+              <p>Feels like {Math.round(weatherData.main.feels_like)}°</p>
+              <p>{weatherData.weather[0].description}</p>
             </div>
 
-            <div className="info-item">
-              <div>
-                <p className="info-value">{weatherData.visibility / 1000} km</p>
-                <p className="info-label">Visibility</p>
+            <div className="hourly-forecast">
+              <div className="hour">
+                <p>🌅 Sunrise</p>
+                <p>{formatTime(weatherData.sys.sunrise)}</p>
               </div>
-            </div>
-
-            <div className="info-item">
-              <div>
-                <p className="info-value">{weatherData.main.pressure} hPa</p>
-                <p className="info-label">Pressure</p>
+              <div className="hour">
+                <p>🌇 Sunset</p>
+                <p>{formatTime(weatherData.sys.sunset)}</p>
               </div>
-            </div>
-
-            <div className="info-item">
-              <div>
-                <p className="info-value">
-                  {Math.round(weatherData.main.feels_like)}°C
-                </p>
-                <p className="info-label">Feels Like</p>
+              <div className="hour">
+                <p>🧭 Wind Dir</p>
+                <p>{getWindDirection(weatherData.wind.deg)}</p>
               </div>
-            </div>
-
-            <div className="info-item">
-              <div>
-                <p className="info-value">
+              <div className="hour">
+                <p>🔍 Visibility</p>
+                <p>{weatherData.visibility / 1000} km</p>
+              </div>
+              <div className="hour">
+                <p>🧊 Pressure</p>
+                <p>{weatherData.main.pressure} hPa</p>
+              </div>
+              <div className="hour">
+                <p>🌡️ Min / Max</p>
+                <p>
                   {Math.round(weatherData.main.temp_min)}° /{' '}
                   {Math.round(weatherData.main.temp_max)}°
                 </p>
-                <p className="info-label">Min / Max</p>
-              </div>
-            </div>
-
-            <div className="info-item">
-              <div>
-                <p className="info-value">
-                  {formatTime(weatherData.sys.sunrise)}
-                </p>
-                <p className="info-label">Sunrise</p>
-              </div>
-            </div>
-
-            <div className="info-item">
-              <div>
-                <p className="info-value">
-                  {formatTime(weatherData.sys.sunset)}
-                </p>
-                <p className="info-label">Sunset</p>
               </div>
             </div>
           </div>
         </div>
       )}
+
+      {isModalOpen && (
+  <div className="modal-backdrop" onClick={() => setIsModalOpen(false)}>
+    <form
+      className="modal-content"
+      onSubmit={handleSearch}
+      onClick={(e) => e.stopPropagation()} // prevent backdrop click
+    >
+     
+      <input
+        type="text"
+        placeholder="Enter city..."
+        value={city}
+        onChange={handleChange}
+        autoFocus
+      />
+      {error && <div className="error">{error}</div>}
+      {loading && <div className="loading"></div>}
+      <div className='mdc'>
+<button
+        type="button"
+        className="modal-close-btn"
+        onClick={() => setIsModalOpen(false)}
+      >
+        ❌
+      </button>
+      <button type="submit">Search</button>
+
+      </div>
+       
+    </form>
+  </div>
+)}
+
     </div>
   );
 };
 
 export default Weather;
+
+

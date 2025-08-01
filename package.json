@@ -12,7 +12,17 @@
   "scripts": {
     "start": "BROWSER='google-chrome-stable' react-scripts start",
     "build": "CI='' react-scripts build",
-    "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.28.0",
+    "@babel/preset-env": "^7.28.0",
+    "@babel/preset-react": "^7.27.1",
+    "babel-jest": "^30.0.5",
+    "jest": "^30.0.5"
   }
 }

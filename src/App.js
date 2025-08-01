@@ -1,14 +1,12 @@
-import React, { Component } from 'react';
-//import logo from './logo.svg';
-import './App.css';
-import Weather from './componet/Weather';
+import React from 'react';
+import Weather from './component/Weather';
 
-class App extends Component {
-  render() {
-    return (
-    <Weather/>
-    );
-  }
+function App() {
+  return (
+    <div className="App">
+      <Weather />
+    </div>
+  );
 }
 
 export default App;
